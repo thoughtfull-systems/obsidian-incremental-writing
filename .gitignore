@@ -1,0 +1,34 @@
+# Intellij
+*.iml
+.idea
+
+# vscode
+.vscode
+
+# npm
+node_modules
+
+# yarn
+yarn-error.log
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# build
+build
+
+# testing
+coverage
+tests/e2e/vault/
+
+# mkdocs
+site/
+venv/
+.venv/
+
+# env
+env.sh
