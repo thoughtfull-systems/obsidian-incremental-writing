@@ -104,14 +104,10 @@ export default class SRPlugin extends Plugin {
             }
         });
 
-        this.addRibbonIcon("SpacedRepIcon", t("REVIEW_CARDS"), async () => {
+        this.addRibbonIcon("SpacedRepIcon", t("OPEN_NOTE_FOR_REVIEW"), async () => {
             if (!this.syncLock) {
                 await this.sync();
-                this.openFlashcardModal(
-                    this.deckTree,
-                    this.remainingDeckTree,
-                    FlashcardReviewMode.Review,
-                );
+                this.reviewNextNoteModal();
             }
         });
 
@@ -191,63 +187,6 @@ export default class SRPlugin extends Plugin {
             },
         });
 
-        this.addCommand({
-            id: "srs-review-flashcards",
-            name: t("REVIEW_ALL_CARDS"),
-            callback: async () => {
-                if (!this.syncLock) {
-                    await this.sync();
-                    this.openFlashcardModal(
-                        this.deckTree,
-                        this.remainingDeckTree,
-                        FlashcardReviewMode.Review,
-                    );
-                }
-            },
-        });
-
-        this.addCommand({
-            id: "srs-cram-flashcards",
-            name: t("CRAM_ALL_CARDS"),
-            callback: async () => {
-                await this.sync();
-                this.openFlashcardModal(this.deckTree, this.deckTree, FlashcardReviewMode.Cram);
-            },
-        });
-
-        this.addCommand({
-            id: "srs-review-flashcards-in-note",
-            name: t("REVIEW_CARDS_IN_NOTE"),
-            callback: async () => {
-                const openFile: TFile | null = this.app.workspace.getActiveFile();
-                if (openFile && openFile.extension === "md") {
-                    this.openFlashcardModalForSingleNote(openFile, FlashcardReviewMode.Review);
-                }
-            },
-        });
-
-        this.addCommand({
-            id: "srs-cram-flashcards-in-note",
-            name: t("CRAM_CARDS_IN_NOTE"),
-            callback: async () => {
-                const openFile: TFile | null = this.app.workspace.getActiveFile();
-                if (openFile && openFile.extension === "md") {
-                    this.openFlashcardModalForSingleNote(openFile, FlashcardReviewMode.Cram);
-                }
-            },
-        });
-
-        this.addCommand({
-            id: "srs-view-stats",
-            name: t("VIEW_STATS"),
-            callback: async () => {
-                if (!this.syncLock) {
-                    await this.sync();
-                    new StatsModal(this.app, this).open();
-                }
-            },
-        });
-
         this.addSettingTab(new SRSettingTab(this.app, this));
 
         this.app.workspace.onLayoutReady(() => {
@@ -262,45 +201,6 @@ export default class SRPlugin extends Plugin {
 
     onunload(): void {
         this.app.workspace.getLeavesOfType(REVIEW_QUEUE_VIEW_TYPE).forEach((leaf) => leaf.detach());
-    }
-
-    private async openFlashcardModalForSingleNote(
-        noteFile: TFile,
-        reviewMode: FlashcardReviewMode,
-    ): Promise<void> {
-        const topicPath: TopicPath = this.findTopicPath(this.createSrTFile(noteFile));
-        const note: Note = await this.loadNote(noteFile, topicPath);
-
-        const deckTree = new Deck("root", null);
-        note.appendCardsToDeck(deckTree);
-        const remainingDeckTree = DeckTreeFilter.filterForRemainingCards(
-            this.questionPostponementList,
-            deckTree,
-            reviewMode,
-        );
-        this.openFlashcardModal(deckTree, remainingDeckTree, reviewMode);
-    }
-
-    private openFlashcardModal(
-        fullDeckTree: Deck,
-        remainingDeckTree: Deck,
-        reviewMode: FlashcardReviewMode,
-    ): void {
-        const deckIterator = SRPlugin.createDeckTreeIterator(this.data.settings);
-        const cardScheduleCalculator = new CardScheduleCalculator(
-            this.data.settings,
-            this.easeByPath,
-        );
-        const reviewSequencer: IFlashcardReviewSequencer = new FlashcardReviewSequencer(
-            reviewMode,
-            deckIterator,
-            this.data.settings,
-            cardScheduleCalculator,
-            this.questionPostponementList,
-        );
-
-        reviewSequencer.setDeckTree(fullDeckTree, remainingDeckTree);
-        new FlashcardModal(this.app, this, this.data.settings, reviewSequencer, reviewMode).open();
     }
 
     private static createDeckTreeIterator(settings: SRSettings): IDeckTreeIterator {
@@ -487,7 +387,6 @@ export default class SRPlugin extends Plugin {
         this.statusBar.setText(
             t("STATUS_BAR", {
                 dueNotesCount: this.dueNotesCount,
-                dueFlashcardsCount: this.remainingDeckTree.getCardCount(CardListType.All, true),
             }),
         );
 

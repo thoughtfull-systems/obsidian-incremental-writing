@@ -134,7 +134,7 @@ export default {
     DISPLAY_DEBUG_INFO: "Display debugging information on the developer console?",
 
     // sidebar.ts
-    NOTES_REVIEW_QUEUE: "Notes Review Queue",
+    NOTES_REVIEW_QUEUE: "Incremental Writing Queue",
     CLOSE: "Close",
     NEW: "New",
     YESTERDAY: "Yesterday",
