@@ -53,7 +53,7 @@ export default {
     YEARS_STR_IVL_MOBILE: "${interval}y",
 
     // settings.ts
-    SETTINGS_HEADER: "Incremental Writing Settings",
+    SETTINGS_HEADER: "Thoughtfull Systems Incremental Writing Settings",
     CHECK_WIKI: 'For more information, check the <a href="${wiki_url}">wiki</a>.',
     FOLDERS_TO_IGNORE: "Folders to ignore",
     FOLDERS_TO_IGNORE_DESC: "Enter folder paths separated by newlines i.e. Templates Meta/Scripts",
