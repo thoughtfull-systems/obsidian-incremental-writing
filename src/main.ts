@@ -120,10 +120,10 @@ export default class SRPlugin extends Plugin {
                 this.app.workspace.on("file-menu", (menu, fileish: TAbstractFile) => {
                     if (fileish instanceof TFile && fileish.extension === "md") {
                         menu.addItem((item) => {
-                            item.setTitle(t("REVIEW_EASY_FILE_MENU"))
+                            item.setTitle(t("REVIEW_HARD_FILE_MENU"))
                                 .setIcon("SpacedRepIcon")
                                 .onClick(() => {
-                                    this.saveReviewResponse(fileish, ReviewResponse.Easy);
+                                    this.saveReviewResponse(fileish, ReviewResponse.Hard);
                                 });
                         });
 
@@ -136,10 +136,10 @@ export default class SRPlugin extends Plugin {
                         });
 
                         menu.addItem((item) => {
-                            item.setTitle(t("REVIEW_HARD_FILE_MENU"))
+                            item.setTitle(t("REVIEW_EASY_FILE_MENU"))
                                 .setIcon("SpacedRepIcon")
                                 .onClick(() => {
-                                    this.saveReviewResponse(fileish, ReviewResponse.Hard);
+                                    this.saveReviewResponse(fileish, ReviewResponse.Easy);
                                 });
                         });
                     }
@@ -159,12 +159,12 @@ export default class SRPlugin extends Plugin {
         });
 
         this.addCommand({
-            id: "srs-note-review-easy",
-            name: t("REVIEW_NOTE_EASY_CMD"),
+            id: "srs-note-review-hard",
+            name: t("REVIEW_NOTE_HARD_CMD"),
             callback: () => {
                 const openFile: TFile | null = this.app.workspace.getActiveFile();
                 if (openFile && openFile.extension === "md") {
-                    this.saveReviewResponse(openFile, ReviewResponse.Easy);
+                    this.saveReviewResponse(openFile, ReviewResponse.Hard);
                 }
             },
         });
@@ -181,12 +181,12 @@ export default class SRPlugin extends Plugin {
         });
 
         this.addCommand({
-            id: "srs-note-review-hard",
-            name: t("REVIEW_NOTE_HARD_CMD"),
+            id: "srs-note-review-easy",
+            name: t("REVIEW_NOTE_EASY_CMD"),
             callback: () => {
                 const openFile: TFile | null = this.app.workspace.getActiveFile();
                 if (openFile && openFile.extension === "md") {
-                    this.saveReviewResponse(openFile, ReviewResponse.Hard);
+                    this.saveReviewResponse(openFile, ReviewResponse.Easy);
                 }
             },
         });
