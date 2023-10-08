@@ -33,3 +33,4 @@ venv/
 # env
 env.sh
 /package-lock.json
+/data.json

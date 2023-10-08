@@ -76,6 +76,7 @@ export default class SRPlugin extends Plugin {
     private incomingLinks: Record<string, LinkStat[]> = {};
     private pageranks: Record<string, number> = {};
     private dueNotesCount = 0;
+    private newNotesCount = 0;
     public dueDatesNotes: Record<number, number> = {}; // Record<# of days in future, due count>
 
     public deckTree: Deck = new Deck("root", null);
@@ -225,6 +226,7 @@ export default class SRPlugin extends Plugin {
         this.pageranks = {};
         this.dueNotesCount = 0;
         this.dueDatesNotes = {};
+        this.newNotesCount = 0;
         this.reviewDecks = {};
 
         // reset flashcards stuff
@@ -315,6 +317,7 @@ export default class SRPlugin extends Plugin {
             ) {
                 for (const matchedNoteTag of matchedNoteTags) {
                     this.reviewDecks[matchedNoteTag].newNotes.push(noteFile);
+                    this.newNotesCount++;
                 }
                 continue;
             }
@@ -386,7 +389,7 @@ export default class SRPlugin extends Plugin {
 
         this.statusBar.setText(
             t("STATUS_BAR", {
-                dueNotesCount: this.dueNotesCount,
+                dueNotesCount: (this.dueNotesCount + this.newNotesCount),
             }),
         );
 
