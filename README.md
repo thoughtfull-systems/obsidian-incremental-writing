@@ -36,3 +36,7 @@ Fight the forgetting curve & note aging by reviewing flashcards & notes using sp
 Check the [docs](https://www.stephenmwangi.com/obsidian-spaced-repetition/) for more details.
 
 <a href='https://ko-fi.com/M4M44DEN6' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi3.png?v=2' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+
+## Attributions
+
+Icon graphis courtesy [Icon Depot](https://thenounproject.com/icon/pencil-1196126/) and [Gregor Cresnar](https://thenounproject.com/icon/reload-1015704/).  Used under Creative Commons license.
