@@ -540,7 +540,11 @@ export default class SRPlugin extends Plugin {
 
         await this.sync();
         if (this.data.settings.autoNextNote) {
-            this.reviewNextNote(this.lastSelectedReviewDeck);
+            if (!this.lastSelectedReviewDeck) {
+                this.reviewNextNoteModal();
+            } else {
+                this.reviewNextNote(this.lastSelectedReviewDeck);
+            }
         }
     }
 
