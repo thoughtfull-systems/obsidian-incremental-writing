@@ -18,7 +18,7 @@ export class ReviewDeck {
     public sortNotes(pageranks: Record<string, number>): void {
         // sort new notes by importance
         this.newNotes = this.newNotes.sort(
-            (a: TFile, b: TFile) => (pageranks[b.path] || 0) - (pageranks[a.path] || 0),
+            (a: TFile, b: TFile) => (pageranks[a.path] || 0) - (pageranks[b.path] || 0),
         );
 
         // sort scheduled notes by date & within those days, sort them by importance
@@ -27,7 +27,7 @@ export class ReviewDeck {
             if (result != 0) {
                 return result;
             }
-            return (pageranks[b.note.path] || 0) - (pageranks[a.note.path] || 0);
+            return (pageranks[a.note.path] || 0) - (pageranks[b.note.path] || 0);
         });
     }
 }

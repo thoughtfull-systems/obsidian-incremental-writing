@@ -102,7 +102,7 @@ export default {
     OPEN_RANDOM_NOTE_DESC: "When you turn this off, notes are ordered by importance (PageRank).",
     AUTO_NEXT_NOTE: "Open next note automatically after a review",
     DISABLE_FILE_MENU_REVIEW_OPTIONS:
-        "Disable review options in the file menu i.e. Review: Easy Good Hard",
+        "Disable options in the file menu i.e. Incremental Writing: Fruitful Skip Unfruitful",
     DISABLE_FILE_MENU_REVIEW_OPTIONS_DESC:
         "After disabling, you can review using the command hotkeys. Reload Obsidian after changing this.",
     MAX_N_DAYS_REVIEW_QUEUE: "Maximum number of days to display on right panel",
