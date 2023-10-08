@@ -1,10 +1,10 @@
 {
     "id": "thoughtfull-systems-incremental-writing",
-    "name": "Thoughtfull Systems Incremental Writing",
+    "name": "Incremental Writing",
     "version": "1.0.0",
     "minAppVersion": "0.15.4",
     "description": "Incrementally edit and link notes using spaced repetition algorithm.",
     "author": "Paul Stadig",
     "authorUrl": "https://github.com/thoughtfull-systems",
-    "isDesktopOnly": false,
+    "isDesktopOnly": false
 }
