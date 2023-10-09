@@ -449,9 +449,10 @@ export default class SRPlugin extends Plugin {
 
             for (const statObj of this.incomingLinks[note.path] || []) {
                 const ease: number = this.easeByPath.getEaseByPath(statObj.sourcePath);
-                if (ease) {
-                    linkTotal += statObj.linkCount * this.pageranks[statObj.sourcePath] * ease;
-                    linkPGTotal += this.pageranks[statObj.sourcePath] * statObj.linkCount;
+                const rank: number = this.pageranks[statObj.sourcePath];
+                if (ease && rank) {
+                    linkTotal += statObj.linkCount * rank * ease;
+                    linkPGTotal += rank * statObj.linkCount;
                     totalLinkCount += statObj.linkCount;
                 }
             }
@@ -459,10 +460,11 @@ export default class SRPlugin extends Plugin {
             const outgoingLinks = this.app.metadataCache.resolvedLinks[note.path] || {};
             for (const linkedFilePath in outgoingLinks) {
                 const ease: number = this.easeByPath.getEaseByPath(linkedFilePath);
-                if (ease) {
+                const rank: number = this.pageranks[linkedFilePath];
+                if (ease && rank) {
                     linkTotal +=
-                        outgoingLinks[linkedFilePath] * this.pageranks[linkedFilePath] * ease;
-                    linkPGTotal += this.pageranks[linkedFilePath] * outgoingLinks[linkedFilePath];
+                        outgoingLinks[linkedFilePath] * rank * ease;
+                    linkPGTotal += rank * outgoingLinks[linkedFilePath];
                     totalLinkCount += outgoingLinks[linkedFilePath];
                 }
             }
