@@ -7,12 +7,10 @@ export class ReviewDeck {
     public deckName: string;
     public newNotes: TFile[] = [];
     public scheduledNotes: SchedNote[] = [];
-    public activeFolders: Set<string>;
     public dueNotesCount = 0;
 
     constructor(name: string) {
         this.deckName = name;
-        this.activeFolders = new Set([this.deckName, t("TODAY")]);
     }
 
     public sortNotes(pageranks: Record<string, number>): void {

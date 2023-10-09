@@ -9,6 +9,7 @@ export const REVIEW_QUEUE_VIEW_TYPE = "review-queue-list-view";
 
 export class ReviewQueueListView extends ItemView {
     private plugin: SRPlugin;
+    public state = {};
 
     constructor(leaf: WorkspaceLeaf, plugin: SRPlugin) {
         super(leaf);
@@ -42,100 +43,101 @@ export class ReviewQueueListView extends ItemView {
 
     public redraw(): void {
         const activeFile: TFile | null = this.app.workspace.getActiveFile();
+        let tree = [];
+        for (const deckKey in this.plugin.reviewDecks) {
+            let deckNode = {title : deckKey, active : false, folders : []}
+            tree.push(deckNode);
+            const deck: ReviewDeck = this.plugin.reviewDecks[deckNode.title];
+            if (deck.newNotes.length > 0) {
+                let folderNode = {title: t("NEW"), notes : [], active : false};
+                deckNode.folders.push(folderNode);
+                for (const note of deck.newNotes) {
+                    let noteNode = {note, active : activeFile && note.path === activeFile.path};
+                    folderNode.notes.push(noteNode);
+                    if (!folderNode.active && noteNode.active) {
+                        folderNode.active = true;
+                        if (!deckNode.active) {
+                            deckNode.active = true;
+                        }
+                    }
+                }
+            }
+            if (deck.scheduledNotes.length > 0) {
+                const now: number = Date.now();
+                let currUnix = -1;
+                let folderTitle = "";
+                const maxDaysToRender: number = this.plugin.data.settings.maxNDaysNotesReviewQueue;
+                let folderNode = null;
+                for (const note of deck.scheduledNotes) {
+                    // We assume scheduledNotes is sorted
+                    if (note.dueUnix != currUnix) {
+                        const days: number = Math.ceil((note.dueUnix - now) / (24 * 3600 * 1000));
+
+                        if (days > maxDaysToRender) {
+                            break;
+                        }
+
+                        if (days === -1) {
+                            folderTitle = t("YESTERDAY");
+                        } else if (days === 0) {
+                            folderTitle = t("TODAY");
+                        } else if (days === 1) {
+                            folderTitle = t("TOMORROW");
+                        } else {
+                            folderTitle = new Date(note.dueUnix).toDateString();
+                        }
+
+                        folderNode = {title: folderTitle, notes : [], active : false}
+                        deckNode.folders.push(folderNode);
+                        currUnix = note.dueUnix;
+                    }
+                    let noteNode = {note : note.note,
+                                    active : activeFile && note.note.path === activeFile.path};
+                    folderNode.notes.push(noteNode);
+                    if (!folderNode.active && noteNode.active) {
+                        folderNode.active = true;
+                        if (!deckNode.active) {
+                            deckNode.active = true;
+                        }
+                    }
+                }
+            }
+        }
 
         const rootEl: HTMLElement = createDiv("nav-folder mod-root");
         const childrenEl: HTMLElement = rootEl.createDiv("nav-folder-children");
 
-        for (const deckKey in this.plugin.reviewDecks) {
-            const deck: ReviewDeck = this.plugin.reviewDecks[deckKey];
-
-            const deckCollapsed = !deck.activeFolders.has(deck.deckName);
-
+        for (const deckNode of tree) {
+            if (!this.state[deckNode.title]) {
+                this.state[deckNode.title] = new Set([deckNode.title, t("TODAY")]);
+            }
+            let deckState = this.state[deckNode.title];
+            const deckCollapsed = !deckState.has(deckNode.title);
             const deckFolderEl: HTMLElement = this.createRightPaneFolder(
                 childrenEl,
-                deckKey,
+                deckNode.title,
                 deckCollapsed,
+                deckNode.active,
                 false,
-                deck,
+                deckState,
             ).getElementsByClassName("nav-folder-children")[0] as HTMLElement;
 
-            if (deck.newNotes.length > 0) {
-                const newNotesFolderEl: HTMLElement = this.createRightPaneFolder(
+            for (const folderNode of deckNode.folders) {
+                const folderEl: HTMLElement = this.createRightPaneFolder(
                     deckFolderEl,
-                    t("NEW"),
-                    !deck.activeFolders.has(t("NEW")),
+                    folderNode.title,
+                    !deckState.has(folderNode.title),
+                    folderNode.active,
                     deckCollapsed,
-                    deck,
+                    deckState
                 );
-
-                for (const newFile of deck.newNotes) {
-                    const fileIsOpen = activeFile && newFile.path === activeFile.path;
-                    if (fileIsOpen) {
-                        deck.activeFolders.add(deck.deckName);
-                        deck.activeFolders.add(t("NEW"));
-                        this.changeFolderIconToExpanded(newNotesFolderEl);
-                        this.changeFolderIconToExpanded(deckFolderEl);
-                    }
+                for (const noteNode of folderNode.notes) {
                     this.createRightPaneFile(
-                        newNotesFolderEl,
-                        newFile,
-                        fileIsOpen,
-                        !deck.activeFolders.has(t("NEW")),
-                        deck,
-                        this.plugin,
-                    );
-                }
-            }
-
-            if (deck.scheduledNotes.length > 0) {
-                const now: number = Date.now();
-                let currUnix = -1;
-                let schedFolderEl: HTMLElement | null = null,
-                    folderTitle = "";
-                const maxDaysToRender: number = this.plugin.data.settings.maxNDaysNotesReviewQueue;
-
-                for (const sNote of deck.scheduledNotes) {
-                    if (sNote.dueUnix != currUnix) {
-                        const nDays: number = Math.ceil((sNote.dueUnix - now) / (24 * 3600 * 1000));
-
-                        if (nDays > maxDaysToRender) {
-                            break;
-                        }
-
-                        if (nDays === -1) {
-                            folderTitle = t("YESTERDAY");
-                        } else if (nDays === 0) {
-                            folderTitle = t("TODAY");
-                        } else if (nDays === 1) {
-                            folderTitle = t("TOMORROW");
-                        } else {
-                            folderTitle = new Date(sNote.dueUnix).toDateString();
-                        }
-
-                        schedFolderEl = this.createRightPaneFolder(
-                            deckFolderEl,
-                            folderTitle,
-                            !deck.activeFolders.has(folderTitle),
-                            deckCollapsed,
-                            deck,
-                        );
-                        currUnix = sNote.dueUnix;
-                    }
-
-                    const fileIsOpen = activeFile && sNote.note.path === activeFile.path;
-                    if (fileIsOpen) {
-                        deck.activeFolders.add(deck.deckName);
-                        deck.activeFolders.add(folderTitle);
-                        this.changeFolderIconToExpanded(schedFolderEl);
-                        this.changeFolderIconToExpanded(deckFolderEl);
-                    }
-
-                    this.createRightPaneFile(
-                        schedFolderEl,
-                        sNote.note,
-                        fileIsOpen,
-                        !deck.activeFolders.has(folderTitle),
-                        deck,
+                        folderEl,
+                        noteNode.note,
+                        noteNode.active,
+                        deckCollapsed || !deckState.has(folderNode.title),
+                        deckNode,
                         this.plugin,
                     );
                 }
@@ -151,8 +153,9 @@ export class ReviewQueueListView extends ItemView {
         parentEl: HTMLElement,
         folderTitle: string,
         collapsed: boolean,
+        active: boolean,
         hidden: boolean,
-        deck: ReviewDeck,
+        state: Set<string>
     ): HTMLElement {
         const folderEl: HTMLDivElement = parentEl.createDiv("nav-folder");
         const folderTitleEl: HTMLDivElement = folderEl.createDiv("nav-folder-title");
@@ -167,24 +170,23 @@ export class ReviewQueueListView extends ItemView {
         }
 
         folderTitleEl.createDiv("nav-folder-title-content").setText(folderTitle);
+        if (active) {
+            folderTitleEl.addClass("is-active");
+        }
 
-        if (hidden) {
+        if (hidden && !active) {
             folderEl.style.display = "none";
         }
 
         folderTitleEl.onClickEvent(() => {
-            for (const child of childrenEl.childNodes as NodeListOf<HTMLElement>) {
-                if (child.style.display === "block" || child.style.display === "") {
-                    child.style.display = "none";
-                    (collapseIconEl.childNodes[0] as HTMLElement).style.transform =
-                        "rotate(-90deg)";
-                    deck.activeFolders.delete(folderTitle);
-                } else {
-                    child.style.display = "block";
-                    (collapseIconEl.childNodes[0] as HTMLElement).style.transform = "";
-                    deck.activeFolders.add(folderTitle);
-                }
+            if ((collapseIconEl.childNodes[0] as HTMLElement).style.transform == "rotate(-90deg)") {
+                (collapseIconEl.childNodes[0] as HTMLElement).style.transform = "";
+                state.add(folderTitle);
+            } else {
+                (collapseIconEl.childNodes[0] as HTMLElement).style.transform = "rotate(-90deg)";
+                state.delete(folderTitle);
             }
+            this.redraw();
         });
 
         return folderEl;
@@ -195,13 +197,13 @@ export class ReviewQueueListView extends ItemView {
         file: TFile,
         fileElActive: boolean,
         hidden: boolean,
-        deck: ReviewDeck,
+        deckNode,
         plugin: SRPlugin,
     ): void {
         const navFileEl: HTMLElement = folderEl
             .getElementsByClassName("nav-folder-children")[0]
             .createDiv("nav-file");
-        if (hidden) {
+        if (hidden && !fileElActive) {
             navFileEl.style.display = "none";
         }
 
@@ -215,7 +217,7 @@ export class ReviewQueueListView extends ItemView {
             "click",
             async (event: MouseEvent) => {
                 event.preventDefault();
-                plugin.lastSelectedReviewDeck = deck.deckName;
+                plugin.lastSelectedReviewDeck = deckNode.title;
                 await this.app.workspace.getLeaf().openFile(file);
                 return false;
             },
