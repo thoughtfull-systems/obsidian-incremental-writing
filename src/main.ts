@@ -539,18 +539,23 @@ export default class SRPlugin extends Plugin {
             }
             await this.savePluginData();
         }
-        await this.app.vault.modify(note, fileText);
+        let ref = this.app.metadataCache.on("changed", (file) => {
+            if (file.path = note.path) {
+                this.sync().then(() => {
+                    if (this.data.settings.autoNextNote) {
+                        if (!this.lastSelectedReviewDeck) {
+                            this.reviewNextNoteModal();
+                        } else {
+                            this.reviewNextNote(this.lastSelectedReviewDeck);
+                        }
+                    }
+                });
+                this.app.metadataCache.offref(ref);
+            }
+        });
+        this.app.vault.modify(note, fileText);
 
         new Notice(t("RESPONSE_RECEIVED"));
-
-        await this.sync();
-        if (this.data.settings.autoNextNote) {
-            if (!this.lastSelectedReviewDeck) {
-                this.reviewNextNoteModal();
-            } else {
-                this.reviewNextNote(this.lastSelectedReviewDeck);
-            }
-        }
     }
 
     async reviewNextNoteModal(): Promise<void> {
