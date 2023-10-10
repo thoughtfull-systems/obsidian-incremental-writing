@@ -39,4 +39,4 @@ Check the [docs](https://www.stephenmwangi.com/obsidian-spaced-repetition/) for 
 
 ## Attributions
 
-Icon graphis courtesy [Icon Depot](https://thenounproject.com/icon/pencil-1196126/) and [Gregor Cresnar](https://thenounproject.com/icon/reload-1015704/).  Used under Creative Commons license.
+Icon graphis courtesy [Icon Depot](https://thenounproject.com/icon/pencil-1196126/) and [Gregor Cresnar](https://thenounproject.com/icon/reload-1015704/). Used under Creative Commons license.

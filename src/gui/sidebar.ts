@@ -45,14 +45,14 @@ export class ReviewQueueListView extends ItemView {
         const activeFile: TFile | null = this.app.workspace.getActiveFile();
         let tree = [];
         for (const deckKey in this.plugin.reviewDecks) {
-            let deckNode = {title : deckKey, active : false, folders : []}
+            let deckNode = { title: deckKey, active: false, folders: [] };
             tree.push(deckNode);
             const deck: ReviewDeck = this.plugin.reviewDecks[deckNode.title];
             if (deck.newNotes.length > 0) {
-                let folderNode = {title: t("NEW"), notes : [], active : false};
+                let folderNode = { title: t("NEW"), notes: [], active: false };
                 deckNode.folders.push(folderNode);
                 for (const note of deck.newNotes) {
-                    let noteNode = {note, active : activeFile && note.path === activeFile.path};
+                    let noteNode = { note, active: activeFile && note.path === activeFile.path };
                     folderNode.notes.push(noteNode);
                     if (!folderNode.active && noteNode.active) {
                         folderNode.active = true;
@@ -87,12 +87,14 @@ export class ReviewQueueListView extends ItemView {
                             folderTitle = new Date(note.dueUnix).toDateString();
                         }
 
-                        folderNode = {title: folderTitle, notes : [], active : false}
+                        folderNode = { title: folderTitle, notes: [], active: false };
                         deckNode.folders.push(folderNode);
                         currUnix = note.dueUnix;
                     }
-                    let noteNode = {note : note.note,
-                                    active : activeFile && note.note.path === activeFile.path};
+                    let noteNode = {
+                        note: note.note,
+                        active: activeFile && note.note.path === activeFile.path,
+                    };
                     folderNode.notes.push(noteNode);
                     if (!folderNode.active && noteNode.active) {
                         folderNode.active = true;
@@ -129,7 +131,7 @@ export class ReviewQueueListView extends ItemView {
                     !deckState.has(folderNode.title),
                     folderNode.active,
                     deckCollapsed,
-                    deckState
+                    deckState,
                 );
                 for (const noteNode of folderNode.notes) {
                     this.createRightPaneFile(
@@ -155,7 +157,7 @@ export class ReviewQueueListView extends ItemView {
         collapsed: boolean,
         active: boolean,
         hidden: boolean,
-        state: Set<string>
+        state: Set<string>,
     ): HTMLElement {
         const folderEl: HTMLDivElement = parentEl.createDiv("nav-folder");
         const folderTitleEl: HTMLDivElement = folderEl.createDiv("nav-folder-title");

@@ -389,7 +389,7 @@ export default class SRPlugin extends Plugin {
 
         this.statusBar.setText(
             t("STATUS_BAR", {
-                dueNotesCount: (this.dueNotesCount + this.newNotesCount),
+                dueNotesCount: this.dueNotesCount + this.newNotesCount,
             }),
         );
 
@@ -462,8 +462,7 @@ export default class SRPlugin extends Plugin {
                 const ease: number = this.easeByPath.getEaseByPath(linkedFilePath);
                 const rank: number = this.pageranks[linkedFilePath];
                 if (ease && rank) {
-                    linkTotal +=
-                        outgoingLinks[linkedFilePath] * rank * ease;
+                    linkTotal += outgoingLinks[linkedFilePath] * rank * ease;
                     linkPGTotal += rank * outgoingLinks[linkedFilePath];
                     totalLinkCount += outgoingLinks[linkedFilePath];
                 }
