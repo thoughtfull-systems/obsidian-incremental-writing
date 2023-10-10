@@ -540,7 +540,7 @@ export default class SRPlugin extends Plugin {
             await this.savePluginData();
         }
         let ref = this.app.metadataCache.on("changed", (file) => {
-            if (file.path = note.path) {
+            if ((file.path == note.path)) {
                 this.sync().then(() => {
                     if (this.data.settings.autoNextNote) {
                         if (!this.lastSelectedReviewDeck) {
