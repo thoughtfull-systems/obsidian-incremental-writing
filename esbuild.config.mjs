@@ -14,7 +14,7 @@ const context = await esbuild.context({
     sourcemap: "inline",
     sourcesContent: !prod,
     treeShaking: true,
-    outfile: "build/main.js",
+    outfile: prod ? "main.js" : (process.env.HOME + "/obsidian/.obsidian/plugins/obsidian-incremental-writing/main.js"),
 });
 
 if (prod) {
