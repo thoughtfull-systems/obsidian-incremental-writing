@@ -43,16 +43,16 @@ export class ReviewQueueListView extends ItemView {
 
     public redraw(): void {
         const activeFile: TFile | null = this.app.workspace.getActiveFile();
-        let tree = [];
+        const tree = [];
         for (const deckKey in this.plugin.reviewDecks) {
-            let deckNode = { title: deckKey, active: false, folders: [] };
+            const deckNode = { title: deckKey, active: false, folders: [] };
             tree.push(deckNode);
             const deck: ReviewDeck = this.plugin.reviewDecks[deckNode.title];
             if (deck.newNotes.length > 0) {
-                let folderNode = { title: t("NEW"), notes: [], active: false };
+                const folderNode = { title: t("NEW"), notes: [], active: false };
                 deckNode.folders.push(folderNode);
                 for (const note of deck.newNotes) {
-                    let noteNode = { note, active: activeFile && note.path === activeFile.path };
+                    const noteNode = { note, active: activeFile && note.path === activeFile.path };
                     folderNode.notes.push(noteNode);
                     if (!folderNode.active && noteNode.active) {
                         folderNode.active = true;
@@ -91,7 +91,7 @@ export class ReviewQueueListView extends ItemView {
                         deckNode.folders.push(folderNode);
                         currUnix = note.dueUnix;
                     }
-                    let noteNode = {
+                    const noteNode = {
                         note: note.note,
                         active: activeFile && note.note.path === activeFile.path,
                     };
@@ -113,7 +113,7 @@ export class ReviewQueueListView extends ItemView {
             if (!this.state[deckNode.title]) {
                 this.state[deckNode.title] = new Set([deckNode.title, t("TODAY")]);
             }
-            let deckState = this.state[deckNode.title];
+            const deckState = this.state[deckNode.title];
             const deckCollapsed = !deckState.has(deckNode.title);
             const deckFolderEl: HTMLElement = this.createRightPaneFolder(
                 childrenEl,
@@ -161,7 +161,7 @@ export class ReviewQueueListView extends ItemView {
     ): HTMLElement {
         const folderEl: HTMLDivElement = parentEl.createDiv("nav-folder");
         const folderTitleEl: HTMLDivElement = folderEl.createDiv("nav-folder-title");
-        const childrenEl: HTMLDivElement = folderEl.createDiv("nav-folder-children");
+        folderEl.createDiv("nav-folder-children");
         const collapseIconEl: HTMLDivElement = folderTitleEl.createDiv(
             "nav-folder-collapse-indicator collapse-icon",
         );

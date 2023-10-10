@@ -2,8 +2,6 @@ import { Notice, Plugin, TAbstractFile, TFile, getAllTags, FrontMatterCache } fr
 import * as graph from "pagerank.js";
 
 import { SRSettingTab, SRSettings, DEFAULT_SETTINGS } from "src/settings";
-import { FlashcardModal } from "src/gui/flashcard-modal";
-import { StatsModal } from "src/gui/stats-modal";
 import { ReviewQueueListView, REVIEW_QUEUE_VIEW_TYPE } from "src/gui/sidebar";
 import { ReviewResponse, schedule } from "src/scheduling";
 import { YAML_FRONT_MATTER_REGEX, SCHEDULING_INFO_REGEX } from "src/constants";
@@ -11,13 +9,9 @@ import { ReviewDeck, ReviewDeckSelectionModal } from "src/ReviewDeck";
 import { t } from "src/lang/helpers";
 import { appIcon } from "src/icons/appicon";
 import { TopicPath } from "./TopicPath";
-import { CardListType, Deck, DeckTreeFilter } from "./Deck";
+import { Deck, DeckTreeFilter } from "./Deck";
 import { Stats } from "./stats";
-import {
-    FlashcardReviewMode,
-    FlashcardReviewSequencer as FlashcardReviewSequencer,
-    IFlashcardReviewSequencer as IFlashcardReviewSequencer,
-} from "./FlashcardReviewSequencer";
+import { FlashcardReviewMode } from "./FlashcardReviewSequencer";
 import {
     CardListOrder,
     DeckTreeIterator,
@@ -26,7 +20,6 @@ import {
     IteratorDeckSource,
     OrderMethod,
 } from "./DeckTreeIterator";
-import { CardScheduleCalculator } from "./CardSchedule";
 import { Note } from "./Note";
 import { NoteFileLoader } from "./NoteFileLoader";
 import { ISRFile, SrTFile as SrTFile } from "./SRFile";
@@ -538,8 +531,8 @@ export default class SRPlugin extends Plugin {
             }
             await this.savePluginData();
         }
-        let ref = this.app.metadataCache.on("changed", (file) => {
-            if ((file.path == note.path)) {
+        const ref = this.app.metadataCache.on("changed", (file) => {
+            if (file.path == note.path) {
                 this.sync().then(() => {
                     if (this.data.settings.autoNextNote) {
                         if (!this.lastSelectedReviewDeck) {
